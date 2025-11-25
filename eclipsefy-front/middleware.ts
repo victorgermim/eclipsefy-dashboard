@@ -3,31 +3,27 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('auth_token')
-    const { pathname } = request.nextUrl
+    const isLoginPage = request.nextUrl.pathname === '/login'
 
-    // Skip middleware for static files (if matcher misses them)
-    // This prevents infinite loops on static assets
-    if (pathname.includes('.')) {
-        return NextResponse.next()
-    }
-
-    const isLoginPage = pathname === '/login'
-
+    // If user is not logged in and trying to access a protected route
+    // The matcher ensures this only runs on protected routes + login
     if (!token && !isLoginPage) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/login'
-        return NextResponse.redirect(url)
+        return NextResponse.redirect(new URL('/login', request.url))
     }
 
+    // If user is logged in and trying to access login page
     if (token && isLoginPage) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/'
-        return NextResponse.redirect(url)
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
     return NextResponse.next()
 }
 
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    // Only run middleware on these specific paths
+    matcher: [
+        '/',
+        '/login',
+        '/projects/:path*',
+    ],
 }
