@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   description: "Dashboard",
 };
 
+import { AuthGuard } from "@/components/auth-guard";
+
+// ... imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthGuard>
+          {children}
+        </AuthGuard>
       </body>
     </html>
   );
