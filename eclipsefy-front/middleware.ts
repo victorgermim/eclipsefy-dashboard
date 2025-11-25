@@ -3,29 +3,31 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('auth_token')
-    const isLoginPage = request.nextUrl.pathname === '/login'
+    const { pathname } = request.nextUrl
+
+    // Skip middleware for static files (if matcher misses them)
+    // This prevents infinite loops on static assets
+    if (pathname.includes('.')) {
+        return NextResponse.next()
+    }
+
+    const isLoginPage = pathname === '/login'
 
     if (!token && !isLoginPage) {
-        return NextResponse.redirect(new URL('/login', request.url))
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        return NextResponse.redirect(url)
     }
 
     if (token && isLoginPage) {
-        return NextResponse.redirect(new URL('/', request.url))
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        return NextResponse.redirect(url)
     }
 
     return NextResponse.next()
 }
 
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public files (files with extensions)
-         */
-        '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
-    ],
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
