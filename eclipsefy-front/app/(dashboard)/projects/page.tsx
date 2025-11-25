@@ -1,113 +1,98 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
-import { kanbanColumns } from "@/lib/mock-data";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, MoreHorizontal, Calendar, Paperclip } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ExternalLink, Rocket, CheckCircle2, Clock } from "lucide-react"
+import Link from "next/link"
+
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 export default function ProjectsPage() {
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-1">Projetos em Órbita</h1>
-          <p className="text-slate-400">Gerencie suas missões e lançamentos.</p>
-        </div>
-        <Button className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white border-0 shadow-[0_0_20px_rgba(124,58,237,0.3)]">
-          <Plus className="w-4 h-4 mr-2" />
-          Nova Missão
-        </Button>
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold tracking-tight">Projetos</h1>
       </div>
-
-      <div className="flex-1 overflow-x-auto pb-4">
-        <div className="flex gap-6 h-full min-w-[1000px]">
-          {kanbanColumns.map((column, colIndex) => (
-            <motion.div
-              key={column.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: colIndex * 0.1 }}
-              className="flex-1 flex flex-col min-w-[280px] h-full"
-            >
-              {/* Column Header */}
-              <div className="flex items-center justify-between mb-4 p-2 rounded-lg bg-white/[0.02] border border-white/5">
-                <div className="flex items-center gap-2">
-                  <div className={cn("w-3 h-3 rounded-full shadow-[0_0_10px_currentColor]", column.color.split(" ")[1])} />
-                  <h3 className="font-semibold text-slate-200">{column.title}</h3>
-                  <Badge variant="secondary" className="bg-white/5 text-slate-400 ml-2">
-                    {column.tasks.length}
-                  </Badge>
-                </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-white">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Landing Page Card */}
+        <Card className="flex flex-col bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden group">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl text-white">Landing Page</CardTitle>
+              <Badge className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/50">
+                <CheckCircle2 className="mr-1 h-3 w-3" />
+                Concluído
+              </Badge>
+            </div>
+            <CardDescription className="text-slate-400">
+              Página de alta conversão para captura de leads.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 p-0">
+            <div className="relative aspect-video w-full bg-slate-900/50 border-y border-white/5 flex items-center justify-center overflow-hidden">
+              {/* Placeholder for LP Preview - In a real app, this would be an image */}
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 to-black/80 z-10" />
+              <div className="z-20 text-center">
+                <p className="text-2xl font-bold text-white tracking-widest uppercase">Darken</p>
+                <p className="text-xs text-slate-400 tracking-[0.2em] uppercase mt-1">Intense Black</p>
               </div>
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            <div className="p-6">
+              <p className="text-sm text-slate-300">
+                Otimizada para performance e SEO. Integrada com ferramentas de analytics.
+              </p>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full bg-violet-600 hover:bg-violet-700 text-white">
+              <a href="https://darkenintenseblack.com" target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Acessar Site
+              </a>
+            </Button>
+          </CardFooter>
+        </Card>
 
-              {/* Tasks Container */}
-              <div className="flex-1 rounded-xl bg-white/[0.02] border border-white/5 p-3 space-y-3 overflow-y-auto custom-scrollbar">
-                {column.tasks.map((task, taskIndex) => (
-                  <motion.div
-                    key={task.id}
-                    layoutId={task.id}
-                    whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.05)" }}
-                    className="group relative p-4 rounded-lg bg-[#0a0a0a]/40 border border-white/10 backdrop-blur-sm cursor-grab active:cursor-grabbing shadow-lg"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <Badge 
-                        variant="outline" 
-                        className={cn("border-0 font-medium", task.tagColor)}
-                      >
-                        {task.tag}
-                      </Badge>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2 text-slate-500 hover:text-white">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    
-                    <h4 className="text-sm font-medium text-white mb-3 leading-snug">
-                      {task.title}
-                    </h4>
-
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex -space-x-2">
-                        <Avatar className="w-6 h-6 border-2 border-[#0a0a0a]">
-                          <AvatarFallback className="bg-violet-500 text-[10px] text-white">V</AvatarFallback>
-                        </Avatar>
-                        <Avatar className="w-6 h-6 border-2 border-[#0a0a0a]">
-                          <AvatarFallback className="bg-cyan-500 text-[10px] text-white">M</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-slate-500 text-xs">
-                        <div className="flex items-center gap-1 hover:text-cyan-400 transition-colors">
-                          <Paperclip className="w-3 h-3" />
-                          <span>2</span>
-                        </div>
-                        <div className="flex items-center gap-1 hover:text-violet-400 transition-colors">
-                          <Calendar className="w-3 h-3" />
-                          <span>2d</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-violet-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                  </motion.div>
-                ))}
-                
-                <Button variant="ghost" className="w-full justify-start text-slate-500 hover:text-white hover:bg-white/5 border border-dashed border-white/10 hover:border-white/20 h-10">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Adicionar Tarefa
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* ADS Card */}
+        <Card className="flex flex-col bg-white/5 border-white/10 backdrop-blur-sm">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl text-white">Gestão de Tráfego (ADS)</CardTitle>
+              <Badge className="bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/50">
+                <Clock className="mr-1 h-3 w-3" />
+                Em Progresso
+              </Badge>
+            </div>
+            <CardDescription className="text-slate-400">
+              Campanhas de Google e Meta Ads.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1">
+            <div className="aspect-video w-full rounded-lg bg-slate-900/50 border border-white/5 flex items-center justify-center mb-4 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10" />
+              <Rocket className="h-12 w-12 text-slate-600 relative z-10" />
+            </div>
+            <p className="text-sm text-slate-300">
+              Estratégia robusta para posicionamento de autoridade e captação de clientes qualificados. Foco em ROI e construção de marca a longo prazo.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full border-white/10 hover:bg-white/5 text-white hover:text-white">
+              <Link href="/projects/ads-strategy">
+                Ver Estratégia Detalhada
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
-  );
+  )
 }

@@ -27,9 +27,6 @@ import { Button } from "@/components/ui/button"
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Projetos", icon: KanbanSquare, href: "/projects" },
-  { name: "Criativos", icon: Palette, href: "/creatives" },
-  { name: "Relatórios", icon: BarChart3, href: "/reports" },
-  { name: "Configurações", icon: Settings, href: "/settings" },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -70,13 +67,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <div className="group-data-[collapsible=icon]:hidden p-4 rounded-xl bg-gradient-to-br from-violet-900/20 to-cyan-900/20 border border-white/10 backdrop-blur-md">
-          <h4 className="text-sm font-semibold text-white mb-1">Plano Pro</h4>
-          <p className="text-xs text-slate-400 mb-3">Acesso ilimitado</p>
-          <Button size="sm" className="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-xs">
-            Upgrade
-          </Button>
-        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
