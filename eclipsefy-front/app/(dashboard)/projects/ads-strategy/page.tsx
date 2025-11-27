@@ -139,10 +139,12 @@ export default function AdsStrategyPage() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <div className="mt-1 h-5 w-5 rounded border border-slate-600 bg-transparent" />
+                            <div className="mt-1 h-5 w-5 rounded border border-emerald-500 bg-emerald-500/20 flex items-center justify-center">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                            </div>
                             <div>
-                                <h4 className="text-sm font-medium text-white">Dia 2: Seleção de Criativos</h4>
-                                <p className="text-xs text-slate-400">Curadoria dos melhores vídeos e fotos do Instagram para anúncios.</p>
+                                <h4 className="text-sm font-medium text-white line-through decoration-slate-500 decoration-2 text-slate-500">Dia 2: Seleção de Criativos</h4>
+                                <p className="text-xs text-slate-500">Curadoria dos melhores vídeos e fotos do Instagram para anúncios.</p>
                             </div>
                         </div>
 
