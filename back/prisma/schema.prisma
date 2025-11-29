@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum TaskStatus {
+  BACKLOG
+  IN_PROGRESS
+  WAITING_APPROVAL
+  DONE
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password_hash String
+  role          Role     @default(CLIENT)
+  company_name  String?
+  avatar_url    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Permissions (JSON)
+  permissions   Json?    // e.g., { can_view_ads: true, can_view_social: false }
+
+  // Relations
+  metrics       Metrics[]
+  tasks         Task[]
+}
+
+model Metrics {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  month             Int
+  year              Int
+  investment_amount Decimal  @db.Decimal(10, 2)
+  leads_generated   Int
+  roas              Decimal  @db.Decimal(5, 2)
+  cpa               Decimal  @db.Decimal(10, 2)
+  createdAt         DateTime @default(now())
+
+  user              User     @relation(fields: [user_id], references: [id])
+}
+
+model Task {
+  id              Int        @id @default(autoincrement())
+  user_id         Int
+  title           String
+  description     String?    @db.Text
+  status          TaskStatus @default(BACKLOG)
+  media_url       String?
+  client_feedback String?    @db.Text
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  user            User       @relation(fields: [user_id], references: [id])
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from '../context/AuthContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,10 +18,6 @@ export const metadata: Metadata = {
   description: "Dashboard",
 };
 
-import { AuthGuard } from "@/components/auth-guard";
-
-// ... imports
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,12 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthGuard>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
           {children}
-        </AuthGuard>
+        </AuthProvider>
       </body>
     </html>
   );
