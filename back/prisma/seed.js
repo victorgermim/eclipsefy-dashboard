@@ -23,6 +23,26 @@ async function main() {
     });
 
     console.log({ admin });
+
+    const clientEmail = 'patricedarken@gmail.com';
+    const clientPassword = 'JEBguatEN6';
+    const clientHashedPassword = await bcrypt.hash(clientPassword, 10);
+
+    const client = await prisma.user.upsert({
+        where: { email: clientEmail },
+        update: {
+            password_hash: clientHashedPassword,
+        },
+        create: {
+            email: clientEmail,
+            password_hash: clientHashedPassword,
+            role: 'CLIENT',
+            company_name: 'Darken',
+            permissions: { canViewMetrics: true },
+        },
+    });
+
+    console.log({ client });
 }
 
 main()
