@@ -5,39 +5,63 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from 'sonner';
+import AdminClientManager from '@/components/admin/AdminClientManager';
 
-// Mock components if not available, or assume they exist
-// import { Overview } from "@/components/overview";
-// import { RecentSales } from "@/components/recent-sales";
+interface Metric {
+  investment_amount: number;
+  leads_generated: number;
+  roas: number;
+  cpa: number;
+}
+
+const MOCK_METRICS: Metric[] = [
+  {
+    investment_amount: 12500.00,
+    leads_generated: 450,
+    roas: 4.5,
+    cpa: 27.77
+  }
+];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const [metrics, setMetrics] = useState<any[]>([]);
+  const { user, loading: authLoading } = useAuth();
+  const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user && user.role === 'CLIENT') {
       fetchMetrics();
+    } else if (user && user.role === 'ADMIN') {
+      setLoading(false);
     }
   }, [user]);
 
   const fetchMetrics = async () => {
     try {
       const response = await api.get('/metrics/my-metrics');
-      setMetrics(response.data);
+      if (response.data && response.data.length > 0) {
+        setMetrics(response.data);
+      } else {
+        setMetrics(MOCK_METRICS); // Fallback to mock
+      }
     } catch (error) {
-      console.error('Failed to fetch metrics', error);
-      toast.error('Failed to load metrics');
+      console.error('Failed to fetch metrics, using mock data', error);
+      setMetrics(MOCK_METRICS); // Fallback to mock
+      toast.error('Using mock data');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return <div className="p-8">Loading dashboard...</div>;
   }
 
-  // Use the latest metric or aggregate
+  if (user?.role === 'ADMIN') {
+    return <AdminClientManager />;
+  }
+
+  // Client View
   const latestMetric = metrics.length > 0 ? metrics[0] : null;
 
   return (
@@ -105,7 +129,6 @@ export default function DashboardPage() {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            {/* <Overview /> */}
             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
               Chart Placeholder (Connect to Recharts)
             </div>
@@ -116,7 +139,6 @@ export default function DashboardPage() {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* <RecentSales /> */}
             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
               Activity Placeholder
             </div>

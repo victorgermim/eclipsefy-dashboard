@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from '../app/login/page';
+import LoginPage from '@/app/(auth)/login/page';
 import { AuthProvider } from '../context/AuthContext';
 import api from '../lib/api';
 import { toast } from 'sonner';
@@ -32,10 +32,13 @@ describe('LoginPage', () => {
         expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
     });
 
-    it('handles successful login', async () => {
+    it('handles successful login and redirects to OTP', async () => {
         (api.post as jest.Mock).mockResolvedValue({
-            data: { token: 'fake-token', user: { id: 1, role: 'CLIENT' } },
+            data: { token: 'temp-token' },
         });
+
+        const pushMock = jest.fn();
+        (require('next/navigation').useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
         render(
             <AuthProvider>
@@ -52,7 +55,7 @@ describe('LoginPage', () => {
                 email: 'test@example.com',
                 password: 'password',
             });
-            expect(toast.success).toHaveBeenCalledWith('Login successful');
+            expect(pushMock).toHaveBeenCalledWith('/otp');
         });
     });
 

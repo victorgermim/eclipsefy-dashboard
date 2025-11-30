@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import api from '../../lib/api';
+import api from '../../../lib/api';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
@@ -24,9 +24,10 @@ export default function LoginPage() {
       const { token, user } = response.data;
       login(token, user);
       toast.success('Login successful');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login failed', error);
-      toast.error(error.response?.data?.error || 'Invalid credentials');
+      const err = error as any;
+      toast.error(err.response?.data?.error || 'Invalid credentials');
     } finally {
       setLoading(false);
     }

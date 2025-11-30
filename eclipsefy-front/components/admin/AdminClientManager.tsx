@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
+
 
 // Mock UI components if Shadcn is not fully set up, or assume standard HTML for now
 // In a real scenario, I would import { Button } from '@/components/ui/button', etc.
@@ -15,7 +16,7 @@ interface User {
 }
 
 export default function AdminClientManager() {
-    const { user } = useAuth();
+
     const [clients, setClients] = useState<User[]>([]);
     const [selectedClient, setSelectedClient] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -57,12 +58,12 @@ export default function AdminClientManager() {
 
         try {
             await api.post(`/metrics/${selectedClient.id}`, metrics);
-            alert('Metrics added successfully!');
+            toast.success('Metrics added successfully!');
             // Reset form
             setMetrics({ ...metrics, investment_amount: '', leads_generated: '', roas: '', cpa: '' });
         } catch (error) {
             console.error('Failed to add metrics', error);
-            alert('Failed to add metrics');
+            toast.error('Failed to add metrics');
         }
     };
 
@@ -82,11 +83,11 @@ export default function AdminClientManager() {
             await api.post('/tasks', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            alert('Task created successfully!');
+            toast.success('Task created successfully!');
             setNewTask({ title: '', description: '', file: null });
         } catch (error) {
             console.error('Failed to create task', error);
-            alert('Failed to create task');
+            toast.error('Failed to create task');
         }
     };
 
