@@ -58,12 +58,12 @@ export default function AdminClientManager() {
 
         try {
             await api.post(`/metrics/${selectedClient.id}`, metrics);
-            toast.success('Metrics added successfully!');
+            toast.success('Métricas adicionadas com sucesso!');
             // Reset form
             setMetrics({ ...metrics, investment_amount: '', leads_generated: '', roas: '', cpa: '' });
         } catch (error) {
             console.error('Failed to add metrics', error);
-            toast.error('Failed to add metrics');
+            toast.error('Falha ao adicionar métricas');
         }
     };
 
@@ -83,37 +83,37 @@ export default function AdminClientManager() {
             await api.post('/tasks', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            toast.success('Task created successfully!');
+            toast.success('Tarefa criada com sucesso!');
             setNewTask({ title: '', description: '', file: null });
         } catch (error) {
             console.error('Failed to create task', error);
-            toast.error('Failed to create task');
+            toast.error('Falha ao criar tarefa');
         }
     };
 
-    if (loading) return <div>Loading clients...</div>;
+    if (loading) return <div>Carregando clientes...</div>;
 
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Admin Dashboard - Mission Control</h1>
+                <h1 className="text-2xl font-bold">Painel Administrativo - Controle da Missão</h1>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Client List */}
                 <div className="bg-card text-card-foreground p-4 rounded-lg border shadow-sm">
-                    <h2 className="text-xl font-semibold mb-4">Clients</h2>
+                    <h2 className="text-xl font-semibold mb-4">Clientes</h2>
                     <ul className="space-y-2">
                         {clients.map((client) => (
                             <li
                                 key={client.id}
                                 onClick={() => setSelectedClient(client)}
                                 className={`p-3 cursor-pointer rounded-md transition-colors ${selectedClient?.id === client.id
-                                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                                        : 'hover:bg-accent hover:text-accent-foreground'
+                                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                                    : 'hover:bg-accent hover:text-accent-foreground'
                                     }`}
                             >
-                                <div className="font-medium">{client.company_name || 'Unnamed Company'}</div>
+                                <div className="font-medium">{client.company_name || 'Empresa sem nome'}</div>
                                 <div className="text-sm text-muted-foreground">{client.email}</div>
                             </li>
                         ))}
@@ -125,16 +125,16 @@ export default function AdminClientManager() {
                     {selectedClient ? (
                         <>
                             <h2 className="text-xl font-semibold mb-4">
-                                Manage: {selectedClient.company_name}
+                                Gerenciar: {selectedClient.company_name}
                             </h2>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Metrics Form */}
                                 <div className="border rounded-lg p-4 bg-background/50">
-                                    <h3 className="font-medium mb-3">Inject Metrics</h3>
+                                    <h3 className="font-medium mb-3">Inserir Métricas</h3>
                                     <form onSubmit={handleMetricsSubmit} className="space-y-3">
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Investment Amount</label>
+                                            <label className="block text-sm font-medium mb-1">Valor Investido</label>
                                             <input
                                                 type="number"
                                                 className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -144,7 +144,7 @@ export default function AdminClientManager() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Leads Generated</label>
+                                            <label className="block text-sm font-medium mb-1">Leads Gerados</label>
                                             <input
                                                 type="number"
                                                 className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -178,17 +178,17 @@ export default function AdminClientManager() {
                                             </div>
                                         </div>
                                         <button type="submit" className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors">
-                                            Save Metrics
+                                            Salvar Métricas
                                         </button>
                                     </form>
                                 </div>
 
                                 {/* Task Form */}
                                 <div className="border rounded-lg p-4 bg-background/50">
-                                    <h3 className="font-medium mb-3">Create Task</h3>
+                                    <h3 className="font-medium mb-3">Criar Tarefa</h3>
                                     <form onSubmit={handleTaskSubmit} className="space-y-3">
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Title</label>
+                                            <label className="block text-sm font-medium mb-1">Título</label>
                                             <input
                                                 type="text"
                                                 className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -198,7 +198,7 @@ export default function AdminClientManager() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Description</label>
+                                            <label className="block text-sm font-medium mb-1">Descrição</label>
                                             <textarea
                                                 className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[80px]"
                                                 value={newTask.description}
@@ -206,7 +206,7 @@ export default function AdminClientManager() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Attachment</label>
+                                            <label className="block text-sm font-medium mb-1">Anexo</label>
                                             <input
                                                 type="file"
                                                 className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
@@ -214,14 +214,14 @@ export default function AdminClientManager() {
                                             />
                                         </div>
                                         <button type="submit" className="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition-colors">
-                                            Create Task
+                                            Criar Tarefa
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         </>
                     ) : (
-                        <div className="text-muted-foreground text-center py-10">Select a client to manage details</div>
+                        <div className="text-muted-foreground text-center py-10">Selecione um cliente para gerenciar detalhes</div>
                     )}
                 </div>
             </div>

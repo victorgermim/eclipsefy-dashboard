@@ -47,14 +47,14 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Failed to fetch metrics, using mock data', error);
       setMetrics(MOCK_METRICS); // Fallback to mock
-      toast.error('Using mock data');
+      toast.error('Usando dados de exemplo');
     } finally {
       setLoading(false);
     }
   };
 
   if (authLoading || loading) {
-    return <div className="p-8">Loading dashboard...</div>;
+    return <div className="p-8">Carregando painel...</div>;
   }
 
   if (user?.role === 'ADMIN') {
@@ -67,32 +67,32 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Painel</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Investment</CardTitle>
+            <CardTitle className="text-sm font-medium">Investimento Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {latestMetric ? `$${latestMetric.investment_amount}` : '$0.00'}
+              {latestMetric ? `R$ ${latestMetric.investment_amount}` : 'R$ 0.00'}
             </div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              +20.1% em relação ao mês anterior
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Leads Generated</CardTitle>
+            <CardTitle className="text-sm font-medium">Leads Gerados</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {latestMetric ? latestMetric.leads_generated : '0'}
             </div>
             <p className="text-xs text-muted-foreground">
-              +180.1% from last month
+              +180.1% em relação ao mês anterior
             </p>
           </CardContent>
         </Card>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               {latestMetric ? `${latestMetric.roas}x` : '0x'}
             </div>
             <p className="text-xs text-muted-foreground">
-              +19% from last month
+              +19% em relação ao mês anterior
             </p>
           </CardContent>
         </Card>
@@ -115,10 +115,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {latestMetric ? `$${latestMetric.cpa}` : '$0.00'}
+              {latestMetric ? `R$ ${latestMetric.cpa}` : 'R$ 0.00'}
             </div>
             <p className="text-xs text-muted-foreground">
-              +201 since last hour
+              +201 desde a última hora
             </p>
           </CardContent>
         </Card>
@@ -126,21 +126,21 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
+            <CardTitle>Visão Geral</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-              Chart Placeholder (Connect to Recharts)
+              Gráfico (Conectar ao Recharts)
             </div>
           </CardContent>
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Atividade Recente</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-              Activity Placeholder
+              Placeholder de Atividade
             </div>
           </CardContent>
         </Card>
