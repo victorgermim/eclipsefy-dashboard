@@ -20,9 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
-      login(token, user);
+      await login(email, password);
       toast.success('Login successful');
     } catch (error) {
       console.error('Login failed', error);

@@ -5,18 +5,21 @@ const jwt = require('jsonwebtoken');
 const prisma = new PrismaClient();
 
 exports.login = async (req, res) => {
+    console.log('Login request received:', req.body.email);
     try {
         const { email, password } = req.body;
 
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
+            console.log('Login failed: User not found', email);
             return res.status(401).json({ error: 'User not found' });
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
         if (!isValidPassword) {
+            console.log('Login failed: Invalid password for', email);
             return res.status(401).json({ error: 'Invalid password' });
         }
 
