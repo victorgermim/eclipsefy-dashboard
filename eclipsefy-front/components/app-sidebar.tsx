@@ -8,9 +8,11 @@ import {
   BarChart3,
   Settings,
   Rocket,
+  LogOut,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useAuth } from "../context/AuthContext"
 
 import {
   Sidebar,
@@ -31,6 +33,7 @@ const menuItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   return (
     <Sidebar collapsible="icon" {...props} className="border-r border-white/10 bg-[#030014]/60 backdrop-blur-xl">
@@ -67,6 +70,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 text-slate-400 hover:text-white hover:bg-white/[0.04]"
+          onClick={logout}
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Sair</span>
+        </Button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
