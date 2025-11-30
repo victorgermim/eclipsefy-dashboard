@@ -32,26 +32,25 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Permissions (JSON)
-  permissions   Json?    // e.g., { can_view_ads: true, can_view_social: false }
+  // Permissions & Services
+  permissions   Json?    // e.g., { can_view_ads: true }
+  services      Json?    // e.g., { ads: true, seo: false, social: true }
 
   // Relations
-  metrics       Metrics[]
-  tasks         Task[]
+  serviceMetrics ServiceMetric[]
+  tasks          Task[]
 }
 
-model Metrics {
-  id                Int      @id @default(autoincrement())
-  user_id           Int
-  month             Int
-  year              Int
-  investment_amount Decimal  @db.Decimal(10, 2)
-  leads_generated   Int
-  roas              Decimal  @db.Decimal(5, 2)
-  cpa               Decimal  @db.Decimal(10, 2)
-  createdAt         DateTime @default(now())
+model ServiceMetric {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  service_type String   // 'ads', 'seo', 'social', etc.
+  data         Json     // Flexible data structure
+  month        Int
+  year         Int
+  createdAt    DateTime @default(now())
 
-  user              User     @relation(fields: [user_id], references: [id])
+  user         User     @relation(fields: [user_id], references: [id])
 }
 
 model Task {

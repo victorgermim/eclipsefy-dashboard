@@ -27,13 +27,23 @@ import {
 import { Button } from "@/components/ui/button"
 
 const menuItems = [
-  { name: "Dashboard", icon: LayoutDashboard, href: "/" },
-  { name: "Projetos", icon: KanbanSquare, href: "/projects" },
+  { name: "Dashboard", icon: LayoutDashboard, href: "/", serviceId: null }, // Always visible
+  { name: "Ads Manager", icon: BarChart3, href: "/ads", serviceId: "ads" },
+  { name: "Social Media", icon: Palette, href: "/social", serviceId: "social" },
+  { name: "SEO", icon: Rocket, href: "/seo", serviceId: "seo" },
+  { name: "Projetos", icon: KanbanSquare, href: "/projects", serviceId: "web" }, // Linked to Web service for now
+  { name: "Configurações", icon: Settings, href: "/settings", serviceId: null },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
+
+  const filteredItems = menuItems.filter(item => {
+    if (!item.serviceId) return true; // Always show items without serviceId
+    if (user?.role === 'ADMIN') return true; // Admin sees everything
+    return user?.services?.[item.serviceId]; // Client sees only active services
+  });
 
   return (
     <Sidebar collapsible="icon" {...props} className="border-r border-white/10 bg-[#030014]/60 backdrop-blur-xl">
@@ -49,7 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu className="px-2">
-          {menuItems.map((item) => {
+          {filteredItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <SidebarMenuItem key={item.name}>

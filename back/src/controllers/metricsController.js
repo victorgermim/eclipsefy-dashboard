@@ -4,17 +4,15 @@ const prisma = new PrismaClient();
 exports.addMetrics = async (req, res) => {
     try {
         const { userId } = req.params;
-        const { month, year, investment_amount, leads_generated, roas, cpa } = req.body;
+        const { service_type, data, month, year } = req.body;
 
-        const metrics = await prisma.metrics.create({
+        const metrics = await prisma.serviceMetric.create({
             data: {
                 user_id: parseInt(userId),
+                service_type,
+                data, // JSON
                 month,
                 year,
-                investment_amount,
-                leads_generated,
-                roas,
-                cpa,
             },
         });
 
@@ -28,7 +26,7 @@ exports.addMetrics = async (req, res) => {
 exports.getClientMetrics = async (req, res) => {
     try {
         const userId = req.userId;
-        const metrics = await prisma.metrics.findMany({
+        const metrics = await prisma.serviceMetric.findMany({
             where: { user_id: userId },
             orderBy: [{ year: 'desc' }, { month: 'desc' }],
         });
@@ -41,7 +39,7 @@ exports.getClientMetrics = async (req, res) => {
 exports.getMetricsByUserId = async (req, res) => {
     try {
         const { userId } = req.params;
-        const metrics = await prisma.metrics.findMany({
+        const metrics = await prisma.serviceMetric.findMany({
             where: { user_id: parseInt(userId) },
             orderBy: [{ year: 'desc' }, { month: 'desc' }],
         });

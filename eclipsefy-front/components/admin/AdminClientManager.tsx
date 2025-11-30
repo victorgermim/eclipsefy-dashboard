@@ -16,31 +16,31 @@ interface User {
     email: string;
     company_name: string;
     role: string;
-}
-
-interface Metric {
-    investment_amount: number;
-    leads_generated: number;
-    roas: number;
-    cpa: number;
+    services?: Record<string, boolean>;
 }
 
 export default function AdminClientManager() {
     const [clients, setClients] = useState<User[]>([]);
     const [selectedClient, setSelectedClient] = useState<User | null>(null);
-    const [clientMetrics, setClientMetrics] = useState<Metric[]>([]);
+    const [clientMetrics, setClientMetrics] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [metricsLoading, setMetricsLoading] = useState(false);
 
+    // Available Services
+    const SERVICES = [
+        { id: 'ads', label: 'Ads Manager' },
+        { id: 'social', label: 'Social Media' },
+        { id: 'seo', label: 'SEO' },
+        { id: 'web', label: 'Web & Landing Pages' },
+        { id: 'ai', label: 'AI Automations' },
+        { id: 'branding', label: 'Branding' },
+    ];
+
     // Form states
-    const [metrics, setMetrics] = useState({
-        month: new Date().getMonth() + 1,
-        year: new Date().getFullYear(),
-        investment_amount: '',
-        leads_generated: '',
-        roas: '',
-        cpa: '',
-    });
+    const [metricsData, setMetricsData] = useState<any>({});
+    const [selectedService, setSelectedService] = useState('ads');
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
 
     const [newTask, setNewTask] = useState({
         title: '',
@@ -83,15 +83,40 @@ export default function AdminClientManager() {
         }
     };
 
+    const toggleService = async (serviceId: string) => {
+        if (!selectedClient) return;
+        const currentServices = selectedClient.services || {};
+        const updatedServices = { ...currentServices, [serviceId]: !currentServices[serviceId] };
+
+        // Optimistic update
+        setSelectedClient({ ...selectedClient, services: updatedServices });
+
+        try {
+            await api.patch(`/users/${selectedClient.id}/services`, { services: updatedServices });
+            toast.success('Serviços atualizados!');
+            fetchClients(); // Refresh list to sync
+        } catch (error) {
+            console.error('Failed to update services', error);
+            toast.error('Falha ao atualizar serviços');
+            // Revert on error
+            setSelectedClient({ ...selectedClient, services: currentServices });
+        }
+    };
+
     const handleMetricsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedClient) return;
 
         try {
-            await api.post(`/metrics/${selectedClient.id}`, metrics);
+            await api.post(`/metrics/${selectedClient.id}`, {
+                service_type: selectedService,
+                data: metricsData,
+                month,
+                year
+            });
             toast.success('Métricas adicionadas com sucesso!');
-            setMetrics({ ...metrics, investment_amount: '', leads_generated: '', roas: '', cpa: '' });
-            fetchClientMetrics(selectedClient.id); // Refresh metrics
+            setMetricsData({});
+            fetchClientMetrics(selectedClient.id);
         } catch (error) {
             console.error('Failed to add metrics', error);
             toast.error('Falha ao adicionar métricas');
@@ -122,6 +147,43 @@ export default function AdminClientManager() {
         }
     };
 
+    const renderMetricsForm = () => {
+        switch (selectedService) {
+            case 'ads':
+                return (
+                    <>
+                        <div className="space-y-2">
+                            <Label>Valor Investido</Label>
+                            <Input type="number" onChange={(e) => setMetricsData({ ...metricsData, investment: e.target.value })} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Clicks</Label>
+                            <Input type="number" onChange={(e) => setMetricsData({ ...metricsData, clicks: e.target.value })} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>ROAS</Label>
+                            <Input type="number" step="0.01" onChange={(e) => setMetricsData({ ...metricsData, roas: e.target.value })} />
+                        </div>
+                    </>
+                );
+            case 'seo':
+                return (
+                    <>
+                        <div className="space-y-2">
+                            <Label>Tráfego Orgânico</Label>
+                            <Input type="number" onChange={(e) => setMetricsData({ ...metricsData, organic_traffic: e.target.value })} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Ranking Médio</Label>
+                            <Input type="number" step="0.1" onChange={(e) => setMetricsData({ ...metricsData, avg_rank: e.target.value })} />
+                        </div>
+                    </>
+                );
+            default:
+                return <div className="text-slate-500">Formulário genérico para {selectedService}</div>;
+        }
+    };
+
     if (loading) return <div className="p-8 text-white">Carregando clientes...</div>;
 
     return (
@@ -135,8 +197,8 @@ export default function AdminClientManager() {
                             key={client.id}
                             onClick={() => setSelectedClient(client)}
                             className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedClient?.id === client.id
-                                ? 'bg-purple-600/20 border border-purple-500/50 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]'
-                                : 'hover:bg-white/5 text-slate-400 hover:text-white border border-transparent'
+                                    ? 'bg-purple-600/20 border border-purple-500/50 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]'
+                                    : 'hover:bg-white/5 text-slate-400 hover:text-white border border-transparent'
                                 }`}
                         >
                             <div className="font-medium">{client.company_name || 'Empresa sem nome'}</div>
@@ -156,7 +218,32 @@ export default function AdminClientManager() {
                             </h1>
                         </div>
 
-                        <Tabs defaultValue="overview" className="space-y-4">
+                        {/* Service Toggles */}
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-md mt-6">
+                            <CardHeader>
+                                <CardTitle className="text-slate-200">Serviços Ativos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {SERVICES.map((service) => (
+                                        <div key={service.id} className="flex items-center space-x-2">
+                                            <input
+                                                type="checkbox"
+                                                id={service.id}
+                                                checked={selectedClient.services?.[service.id] || false}
+                                                onChange={() => toggleService(service.id)}
+                                                className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+                                            />
+                                            <label htmlFor={service.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-300">
+                                                {service.label}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Tabs defaultValue="overview" className="space-y-4 mt-6">
                             <TabsList className="bg-black/40 border border-white/10">
                                 <TabsTrigger value="overview">Visão Geral</TabsTrigger>
                                 <TabsTrigger value="manage">Gerenciar</TabsTrigger>
@@ -175,55 +262,20 @@ export default function AdminClientManager() {
                                             <CardTitle className="text-slate-200">Inserir Métricas</CardTitle>
                                         </CardHeader>
                                         <CardContent>
+                                            <div className="mb-4">
+                                                <Label>Serviço</Label>
+                                                <select
+                                                    className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-white"
+                                                    value={selectedService}
+                                                    onChange={(e) => setSelectedService(e.target.value)}
+                                                >
+                                                    {SERVICES.map(s => (
+                                                        <option key={s.id} value={s.id}>{s.label}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                             <form onSubmit={handleMetricsSubmit} className="space-y-4">
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="investment">Valor Investido</Label>
-                                                    <Input
-                                                        id="investment"
-                                                        type="number"
-                                                        className="bg-black/20 border-white/10 text-white"
-                                                        value={metrics.investment_amount}
-                                                        onChange={(e) => setMetrics({ ...metrics, investment_amount: e.target.value })}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="leads">Leads Gerados</Label>
-                                                    <Input
-                                                        id="leads"
-                                                        type="number"
-                                                        className="bg-black/20 border-white/10 text-white"
-                                                        value={metrics.leads_generated}
-                                                        onChange={(e) => setMetrics({ ...metrics, leads_generated: e.target.value })}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="roas">ROAS</Label>
-                                                        <Input
-                                                            id="roas"
-                                                            type="number"
-                                                            step="0.01"
-                                                            className="bg-black/20 border-white/10 text-white"
-                                                            value={metrics.roas}
-                                                            onChange={(e) => setMetrics({ ...metrics, roas: e.target.value })}
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="cpa">CPA</Label>
-                                                        <Input
-                                                            id="cpa"
-                                                            type="number"
-                                                            step="0.01"
-                                                            className="bg-black/20 border-white/10 text-white"
-                                                            value={metrics.cpa}
-                                                            onChange={(e) => setMetrics({ ...metrics, cpa: e.target.value })}
-                                                            required
-                                                        />
-                                                    </div>
-                                                </div>
+                                                {renderMetricsForm()}
                                                 <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                                                     Salvar Métricas
                                                 </Button>

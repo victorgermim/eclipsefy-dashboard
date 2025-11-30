@@ -5,5 +5,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
 router.get('/', authMiddleware, adminMiddleware, userController.listUsers);
+router.patch('/:id/services', authMiddleware, adminMiddleware, userController.updateUserServices);
 
 module.exports = router;

@@ -13,6 +13,7 @@ interface User {
     company_name?: string;
     avatar_url?: string;
     permissions?: any;
+    services?: Record<string, boolean>;
 }
 
 interface AuthContextType {
@@ -39,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     Cookies.remove('token');
                     setUser(null);
                 } else {
-                    setUser({ id: decoded.id, role: decoded.role, email: decoded.email || '' });
+                    setUser({ id: decoded.id, role: decoded.role, email: decoded.email || '', services: decoded.services });
                 }
             } catch (error) {
                 Cookies.remove('token');
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const tempToken = sessionStorage.getItem('temp_token');
             if (tempToken) {
                 const decoded: any = jwtDecode(tempToken);
-                setUser({ id: decoded.id, role: decoded.role, email: decoded.email || '' });
+                setUser({ id: decoded.id, role: decoded.role, email: decoded.email || '', services: decoded.services });
                 Cookies.set('token', tempToken, { expires: 1 });
                 sessionStorage.removeItem('temp_token');
                 router.push('/');

@@ -2,81 +2,85 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface Metric {
-    investment_amount: number;
-    leads_generated: number;
-    roas: number;
-    cpa: number;
+interface ServiceMetric {
+    service_type: string;
+    data: any;
+    month: number;
+    year: number;
 }
 
 interface ClientDashboardViewProps {
-    metrics: Metric[];
+    metrics: ServiceMetric[];
     loading?: boolean;
 }
 
 export default function ClientDashboardView({ metrics, loading }: ClientDashboardViewProps) {
     if (loading) {
-        return <div className="p-8">Carregando dados...</div>;
+        return <div className="p-8 text-white">Carregando dados...</div>;
     }
 
-    const latestMetric = metrics.length > 0 ? metrics[0] : null;
+    // Helper to get latest metric for a service
+    const getLatestMetric = (serviceType: string) => {
+        return metrics.find(m => m.service_type === serviceType)?.data || null;
+    };
+
+    const adsData = getLatestMetric('ads');
+    const seoData = getLatestMetric('seo');
 
     return (
         <div className="flex-1 space-y-4 pt-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="bg-black/40 border-white/10 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-200">Investimento Total</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {latestMetric ? `R$ ${latestMetric.investment_amount}` : 'R$ 0.00'}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                            +20.1% em relação ao mês anterior
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-black/40 border-white/10 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-200">Leads Gerados</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {latestMetric ? latestMetric.leads_generated : '0'}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                            +180.1% em relação ao mês anterior
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-black/40 border-white/10 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-200">ROAS</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {latestMetric ? `${latestMetric.roas}x` : '0x'}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                            +19% em relação ao mês anterior
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-black/40 border-white/10 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-200">CPA</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {latestMetric ? `R$ ${latestMetric.cpa}` : 'R$ 0.00'}
-                        </div>
-                        <p className="text-xs text-slate-400">
-                            +201 desde a última hora
-                        </p>
-                    </CardContent>
-                </Card>
+                {/* Ads Manager Widgets */}
+                {adsData && (
+                    <>
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-slate-200">Investimento (Ads)</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-white">R$ {adsData.investment || '0.00'}</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-slate-200">ROAS (Ads)</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-white">{adsData.roas || '0'}x</div>
+                            </CardContent>
+                        </Card>
+                    </>
+                )}
+
+                {/* SEO Widgets */}
+                {seoData && (
+                    <>
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-slate-200">Tráfego Orgânico</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-white">{seoData.organic_traffic || '0'}</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-md">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium text-slate-200">Ranking Médio</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-white">#{seoData.avg_rank || '-'}</div>
+                            </CardContent>
+                        </Card>
+                    </>
+                )}
+
+                {!adsData && !seoData && (
+                    <div className="col-span-4 text-center text-slate-500 py-8">
+                        Nenhum dado disponível para os serviços ativos.
+                    </div>
+                )}
             </div>
+
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-4 bg-black/40 border-white/10 backdrop-blur-md">
                     <CardHeader>
