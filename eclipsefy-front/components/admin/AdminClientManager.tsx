@@ -94,30 +94,34 @@ export default function AdminClientManager() {
     if (loading) return <div>Loading clients...</div>;
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Mission Control</h1>
+        <div className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Admin Dashboard - Mission Control</h1>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Client List */}
-                <div className="bg-white p-4 rounded shadow">
+                <div className="bg-card text-card-foreground p-4 rounded-lg border shadow-sm">
                     <h2 className="text-xl font-semibold mb-4">Clients</h2>
-                    <ul>
+                    <ul className="space-y-2">
                         {clients.map((client) => (
                             <li
                                 key={client.id}
                                 onClick={() => setSelectedClient(client)}
-                                className={`p-2 cursor-pointer hover:bg-gray-100 rounded ${selectedClient?.id === client.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                                className={`p-3 cursor-pointer rounded-md transition-colors ${selectedClient?.id === client.id
+                                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                                        : 'hover:bg-accent hover:text-accent-foreground'
                                     }`}
                             >
                                 <div className="font-medium">{client.company_name || 'Unnamed Company'}</div>
-                                <div className="text-sm text-gray-500">{client.email}</div>
+                                <div className="text-sm text-muted-foreground">{client.email}</div>
                             </li>
                         ))}
                     </ul>
                 </div>
 
                 {/* Details Panel */}
-                <div className="md:col-span-2 bg-white p-4 rounded shadow">
+                <div className="md:col-span-2 bg-card text-card-foreground p-4 rounded-lg border shadow-sm">
                     {selectedClient ? (
                         <>
                             <h2 className="text-xl font-semibold mb-4">
@@ -126,24 +130,24 @@ export default function AdminClientManager() {
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Metrics Form */}
-                                <div className="border p-4 rounded">
+                                <div className="border rounded-lg p-4 bg-background/50">
                                     <h3 className="font-medium mb-3">Inject Metrics</h3>
                                     <form onSubmit={handleMetricsSubmit} className="space-y-3">
                                         <div>
-                                            <label className="block text-sm">Investment Amount</label>
+                                            <label className="block text-sm font-medium mb-1">Investment Amount</label>
                                             <input
                                                 type="number"
-                                                className="w-full border p-2 rounded"
+                                                className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                 value={metrics.investment_amount}
                                                 onChange={(e) => setMetrics({ ...metrics, investment_amount: e.target.value })}
                                                 required
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm">Leads Generated</label>
+                                            <label className="block text-sm font-medium mb-1">Leads Generated</label>
                                             <input
                                                 type="number"
-                                                className="w-full border p-2 rounded"
+                                                className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                 value={metrics.leads_generated}
                                                 onChange={(e) => setMetrics({ ...metrics, leads_generated: e.target.value })}
                                                 required
@@ -151,65 +155,65 @@ export default function AdminClientManager() {
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-sm">ROAS</label>
+                                                <label className="block text-sm font-medium mb-1">ROAS</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
-                                                    className="w-full border p-2 rounded"
+                                                    className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                     value={metrics.roas}
                                                     onChange={(e) => setMetrics({ ...metrics, roas: e.target.value })}
                                                     required
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm">CPA</label>
+                                                <label className="block text-sm font-medium mb-1">CPA</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
-                                                    className="w-full border p-2 rounded"
+                                                    className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                     value={metrics.cpa}
                                                     onChange={(e) => setMetrics({ ...metrics, cpa: e.target.value })}
                                                     required
                                                 />
                                             </div>
                                         </div>
-                                        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+                                        <button type="submit" className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors">
                                             Save Metrics
                                         </button>
                                     </form>
                                 </div>
 
                                 {/* Task Form */}
-                                <div className="border p-4 rounded">
+                                <div className="border rounded-lg p-4 bg-background/50">
                                     <h3 className="font-medium mb-3">Create Task</h3>
                                     <form onSubmit={handleTaskSubmit} className="space-y-3">
                                         <div>
-                                            <label className="block text-sm">Title</label>
+                                            <label className="block text-sm font-medium mb-1">Title</label>
                                             <input
                                                 type="text"
-                                                className="w-full border p-2 rounded"
+                                                className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                 value={newTask.title}
                                                 onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                                                 required
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm">Description</label>
+                                            <label className="block text-sm font-medium mb-1">Description</label>
                                             <textarea
-                                                className="w-full border p-2 rounded"
+                                                className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[80px]"
                                                 value={newTask.description}
                                                 onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm">Attachment (Image/Video)</label>
+                                            <label className="block text-sm font-medium mb-1">Attachment</label>
                                             <input
                                                 type="file"
-                                                className="w-full"
+                                                className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                                                 onChange={(e) => setNewTask({ ...newTask, file: e.target.files ? e.target.files[0] : null })}
                                             />
                                         </div>
-                                        <button type="submit" className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
+                                        <button type="submit" className="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition-colors">
                                             Create Task
                                         </button>
                                     </form>
@@ -217,7 +221,7 @@ export default function AdminClientManager() {
                             </div>
                         </>
                     ) : (
-                        <div className="text-gray-500 text-center py-10">Select a client to manage details</div>
+                        <div className="text-muted-foreground text-center py-10">Select a client to manage details</div>
                     )}
                 </div>
             </div>

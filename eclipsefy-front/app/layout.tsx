@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from '../context/AuthContext';
+import { ModeToggle } from "@/components/mode-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,8 +20,6 @@ export const metadata: Metadata = {
   description: "Dashboard",
 };
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,6 +35,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <div className="absolute top-4 right-4 z-50">
+              <ModeToggle />
+            </div>
             {children}
           </AuthProvider>
         </ThemeProvider>
