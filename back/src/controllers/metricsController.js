@@ -37,3 +37,17 @@ exports.getClientMetrics = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch metrics' });
     }
 };
+
+exports.getMetricsByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const metrics = await prisma.metrics.findMany({
+            where: { user_id: parseInt(userId) },
+            orderBy: [{ year: 'desc' }, { month: 'desc' }],
+        });
+        res.json(metrics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch user metrics' });
+    }
+};

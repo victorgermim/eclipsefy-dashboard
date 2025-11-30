@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
 router.post('/:userId', authMiddleware, adminMiddleware, metricsController.addMetrics);
+router.get('/user/:userId', authMiddleware, adminMiddleware, metricsController.getMetricsByUserId);
 router.get('/my-metrics', authMiddleware, metricsController.getClientMetrics);
 
 module.exports = router;
