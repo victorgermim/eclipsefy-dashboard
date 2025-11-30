@@ -29,6 +29,8 @@ model User {
   role          Role     @default(CLIENT)
   company_name  String?
   avatar_url    String?
+  phone         String?
+  cpf_cnpj      String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

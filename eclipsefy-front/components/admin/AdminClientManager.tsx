@@ -10,6 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus, Send } from 'lucide-react';
 
 interface User {
     id: number;
@@ -17,6 +25,8 @@ interface User {
     company_name: string;
     role: string;
     services?: Record<string, boolean>;
+    phone?: string;
+    cpf_cnpj?: string;
 }
 
 export default function AdminClientManager() {
@@ -25,6 +35,16 @@ export default function AdminClientManager() {
     const [clientMetrics, setClientMetrics] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [metricsLoading, setMetricsLoading] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    // New Client Form State
+    const [newClient, setNewClient] = useState({
+        email: '',
+        password: '',
+        company_name: '',
+        phone: '',
+        cpf_cnpj: ''
+    });
 
     // Available Services
     const SERVICES = [
@@ -80,6 +100,42 @@ export default function AdminClientManager() {
             toast.error('Falha ao carregar métricas do cliente');
         } finally {
             setMetricsLoading(false);
+        }
+    };
+
+    const handleCreateClient = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await api.post('/users', newClient);
+            toast.success('Cliente criado com sucesso!');
+            setIsCreateModalOpen(false);
+            setNewClient({ email: '', password: '', company_name: '', phone: '', cpf_cnpj: '' });
+            fetchClients();
+        } catch (error) {
+            console.error('Failed to create client', error);
+            toast.error('Falha ao criar cliente. Verifique os dados.');
+        }
+    };
+
+    const handleSendAccess = async () => {
+        if (!selectedClient) return;
+        // Prompt for password to send (or could be auto-generated/stored logic, but for now asking admin)
+        // For simplicity in this flow, we'll ask the admin to confirm sending the access.
+        // Ideally, we should have the password from creation or generate a reset link.
+        // Since the user asked to "send access" after creation, we might need to know the password.
+        // BUT, we don't store plain passwords.
+        // OPTION: We can ask the admin to input the password they just created, or generate a new temporary one.
+        // Let's ask for the password to send in the email for now, as per "enviar o acesso... com o acesso do cliente".
+
+        const passwordToSend = prompt("Digite a senha para enviar ao cliente (deve ser a mesma cadastrada ou uma nova):");
+        if (!passwordToSend) return;
+
+        try {
+            await api.post(`/users/${selectedClient.id}/send-access`, { password: passwordToSend });
+            toast.success('Email de acesso enviado com sucesso!');
+        } catch (error) {
+            console.error('Failed to send access email', error);
+            toast.error('Falha ao enviar email de acesso');
         }
     };
 
@@ -190,15 +246,82 @@ export default function AdminClientManager() {
         <div className="flex h-screen bg-[#030014] text-white overflow-hidden">
             {/* Sidebar - Client List */}
             <aside className="w-64 border-r border-white/10 bg-black/40 backdrop-blur-xl p-4 flex flex-col gap-4">
-                <h2 className="text-xl font-bold tracking-tight px-2">Clientes</h2>
+                <div className="flex items-center justify-between px-2">
+                    <h2 className="text-xl font-bold tracking-tight">Clientes</h2>
+                    <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                        <DialogTrigger asChild>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10">
+                                <Plus className="h-5 w-5" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-[#0a0a0a] border-white/10 text-white">
+                            <DialogHeader>
+                                <DialogTitle>Novo Cliente</DialogTitle>
+                            </DialogHeader>
+                            <form onSubmit={handleCreateClient} className="space-y-4 mt-4">
+                                <div className="space-y-2">
+                                    <Label>Nome da Empresa</Label>
+                                    <Input
+                                        value={newClient.company_name}
+                                        onChange={(e) => setNewClient({ ...newClient, company_name: e.target.value })}
+                                        required
+                                        className="bg-white/5 border-white/10"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Email</Label>
+                                    <Input
+                                        type="email"
+                                        value={newClient.email}
+                                        onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                                        required
+                                        className="bg-white/5 border-white/10"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Senha</Label>
+                                    <Input
+                                        type="password"
+                                        value={newClient.password}
+                                        onChange={(e) => setNewClient({ ...newClient, password: e.target.value })}
+                                        required
+                                        className="bg-white/5 border-white/10"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Telefone</Label>
+                                        <Input
+                                            value={newClient.phone}
+                                            onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                                            className="bg-white/5 border-white/10"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>CPF/CNPJ</Label>
+                                        <Input
+                                            value={newClient.cpf_cnpj}
+                                            onChange={(e) => setNewClient({ ...newClient, cpf_cnpj: e.target.value })}
+                                            className="bg-white/5 border-white/10"
+                                        />
+                                    </div>
+                                </div>
+                                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
+                                    Criar Cliente
+                                </Button>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+
                 <div className="flex-1 overflow-y-auto space-y-2">
                     {clients.map((client) => (
                         <div
                             key={client.id}
                             onClick={() => setSelectedClient(client)}
                             className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedClient?.id === client.id
-                                    ? 'bg-purple-600/20 border border-purple-500/50 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]'
-                                    : 'hover:bg-white/5 text-slate-400 hover:text-white border border-transparent'
+                                ? 'bg-purple-600/20 border border-purple-500/50 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]'
+                                : 'hover:bg-white/5 text-slate-400 hover:text-white border border-transparent'
                                 }`}
                         >
                             <div className="font-medium">{client.company_name || 'Empresa sem nome'}</div>
@@ -216,6 +339,13 @@ export default function AdminClientManager() {
                             <h1 className="text-3xl font-bold tracking-tight">
                                 Gerenciar: <span className="text-purple-400">{selectedClient.company_name}</span>
                             </h1>
+                            <Button
+                                onClick={handleSendAccess}
+                                className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                            >
+                                <Send className="h-4 w-4" />
+                                Enviar Acesso
+                            </Button>
                         </div>
 
                         {/* Service Toggles */}
